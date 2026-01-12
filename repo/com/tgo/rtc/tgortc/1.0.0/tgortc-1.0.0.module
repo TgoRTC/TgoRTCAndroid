@@ -1,0 +1,134 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.tgo.rtc",
+    "module": "tgortc",
+    "version": "1.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.13"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "dependencies": [
+        {
+          "group": "io.livekit",
+          "module": "livekit-android",
+          "version": {
+            "requires": "2.23.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "tgortc-1.0.0.aar",
+          "url": "tgortc-1.0.0.aar",
+          "size": 69321,
+          "sha512": "13c41f40f92242c9c85146744030d1d621c946f40fa8e20d31541c54b81825c64a4407b3d69a5bbf839bc267deb90adc5ce0ad551707b570d43428af25eed2f7",
+          "sha256": "f28deb8410dbc63fa0a874d541a4466d54a962db2fae9fbfa67576cb44e02b75",
+          "sha1": "0b529a63783fa23b9c810622e3c15cafd2a995a3",
+          "md5": "d9d30465541fe4eb781a811b877548da"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.core",
+          "module": "core-ktx",
+          "version": {
+            "requires": "1.10.1"
+          }
+        },
+        {
+          "group": "androidx.appcompat",
+          "module": "appcompat",
+          "version": {
+            "requires": "1.6.1"
+          }
+        },
+        {
+          "group": "com.google.android.material",
+          "module": "material",
+          "version": {
+            "requires": "1.10.0"
+          }
+        },
+        {
+          "group": "io.livekit",
+          "module": "livekit-android",
+          "version": {
+            "requires": "2.23.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "tgortc-1.0.0.aar",
+          "url": "tgortc-1.0.0.aar",
+          "size": 69321,
+          "sha512": "13c41f40f92242c9c85146744030d1d621c946f40fa8e20d31541c54b81825c64a4407b3d69a5bbf839bc267deb90adc5ce0ad551707b570d43428af25eed2f7",
+          "sha256": "f28deb8410dbc63fa0a874d541a4466d54a962db2fae9fbfa67576cb44e02b75",
+          "sha1": "0b529a63783fa23b9c810622e3c15cafd2a995a3",
+          "md5": "d9d30465541fe4eb781a811b877548da"
+        }
+      ]
+    },
+    {
+      "name": "releaseSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "files": [
+        {
+          "name": "tgortc-1.0.0-sources.jar",
+          "url": "tgortc-1.0.0-sources.jar",
+          "size": 42234,
+          "sha512": "f2a92b50fd215bd4eb2489d1bca3d3e0bd13aa3547758922bdbb9480777591519b37ad0de2726c7519bee4983f9876699425408586aef0e781fd5037903267cf",
+          "sha256": "646301611e32aba4ecb5c921b212f84d6b72de9564745f98913019dd44ce2c37",
+          "sha1": "4783d15b741a6ee93204fb9bd8446d0bfdd2797c",
+          "md5": "63a4511273566892980bceda789d19d3"
+        }
+      ]
+    }
+  ]
+}
