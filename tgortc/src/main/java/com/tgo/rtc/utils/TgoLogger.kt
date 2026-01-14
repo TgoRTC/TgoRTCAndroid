@@ -18,6 +18,12 @@ object TgoLogger {
         }
     }
 
+    fun warn(msg: String) {
+        if (TgoRTC.instance.options.debug) {
+            Log.w(TAG, "[WARN] $msg")
+        }
+    }
+
     fun error(msg: String) {
         if (TgoRTC.instance.options.debug) {
             Log.e(TAG, "[ERROR] $msg")

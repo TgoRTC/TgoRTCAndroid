@@ -84,6 +84,9 @@ class TgoRoomManager private constructor() {
 
         val newRoom = LiveKit.create(TgoRTC.instance.getContext())
         room = newRoom
+        
+        // Set AudioSwitchHandler to TgoAudioManager
+        TgoRTC.instance.audioManager.setAudioSwitchHandler(newRoom.audioSwitchHandler)
 
         scope.launch {
             newRoom.events.collect { event ->
@@ -195,5 +198,6 @@ class TgoRoomManager private constructor() {
         room = null
         currentRoomInfo = null
         TgoRTC.instance.participantManager.clear()
+        TgoRTC.instance.audioManager.setAudioSwitchHandler(null)
     }
 }
