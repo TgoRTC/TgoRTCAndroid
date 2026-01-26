@@ -164,21 +164,19 @@ class TgoRoomManager private constructor() {
 
     private fun checkParticipantsTimeout(timeoutSeconds: Int) {
         val now = Date()
-        val participants =
-            TgoRTC.instance.participantManager.getRemoteParticipants(includeTimeout = true)
+        val participants = TgoRTC.instance.participantManager.getRemoteParticipants()
 
         for (participant in participants) {
             if (participant.isLocal) continue
 
-            if (participant.isJoined()) {
-                if (participant.isTimeout()) participant.setTimeout(false)
-                continue
-            }
+            // 已加入的参与者不检查超时
+            if (participant.isJoined()) continue
 
             val elapsed = (now.time - participant.getCreatedAt().time) / 1000
-            if (elapsed >= timeoutSeconds && !participant.isTimeout()) {
-                participant.setTimeout(true)
+            if (elapsed >= timeoutSeconds) {
                 TgoLogger.info("参与者 ${participant.uid} 超时未加入")
+                // 真实删除超时参与者并通知 UI
+                TgoRTC.instance.participantManager.removeTimeoutParticipant(participant.uid)
             }
         }
     }

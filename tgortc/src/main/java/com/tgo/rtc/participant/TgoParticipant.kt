@@ -33,7 +33,6 @@ class TgoParticipant(
     private var audioLevelJob: Job? = null
 
     private val createdAt = Date()
-    private var isTimeout = false
 
     private var currentVideoInfo = TgoVideoInfo.EMPTY
     private val videoInfoListeners = mutableListOf<(TgoVideoInfo) -> Unit>()
@@ -49,7 +48,6 @@ class TgoParticipant(
     private val leaveListeners = mutableListOf<() -> Unit>()
     private val trackPublishedListeners = mutableListOf<() -> Unit>()
     private val trackUnpublishedListeners = mutableListOf<() -> Unit>()
-    private val timeoutListeners = mutableListOf<() -> Unit>()
 
     companion object {
         // Audio level monitoring interval in milliseconds
@@ -61,23 +59,6 @@ class TgoParticipant(
     }
 
     fun getCreatedAt(): Date = createdAt
-    fun isTimeout(): Boolean = isTimeout
-    fun setTimeout(value: Boolean) {
-        isTimeout = value
-        if (value) notifyTimeout()
-    }
-
-    fun addTimeoutListener(listener: () -> Unit) {
-        timeoutListeners.add(listener)
-    }
-
-    fun removeTimeoutListener(listener: () -> Unit) {
-        timeoutListeners.remove(listener)
-    }
-
-    private fun notifyTimeout() {
-        timeoutListeners.toList().forEach { it() }
-    }
 
     fun getVideoTrack(source: Track.Source = Track.Source.CAMERA): VideoTrack? {
         val p = localParticipant ?: remoteParticipant ?: return null
@@ -483,6 +464,5 @@ class TgoParticipant(
         trackPublishedListeners.clear()
         trackUnpublishedListeners.clear()
         videoInfoListeners.clear()
-        timeoutListeners.clear()
     }
 }

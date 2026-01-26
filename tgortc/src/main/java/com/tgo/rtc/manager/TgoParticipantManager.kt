@@ -23,15 +23,15 @@ class TgoParticipantManager private constructor() {
      */
     fun getLocalParticipantOrNull(): TgoParticipant? {
         val roomInfo = TgoRTC.instance.roomManager.currentRoomInfo ?: return localParticipant
-        
+
         if (localParticipant == null) {
             localParticipant = TgoParticipant(roomInfo.loginUID)
         }
-        
+
         TgoRTC.instance.roomManager.room?.localParticipant?.let {
             localParticipant?.setLocalParticipant(it)
         }
-        
+
         return localParticipant
     }
 
@@ -39,7 +39,7 @@ class TgoParticipantManager private constructor() {
      * Get local participant. Throws if room info is not available.
      */
     fun getLocalParticipant(): TgoParticipant {
-        return getLocalParticipantOrNull() 
+        return getLocalParticipantOrNull()
             ?: throw IllegalStateException("Cannot get local participant: room info is null and no cached participant")
     }
 
@@ -50,13 +50,13 @@ class TgoParticipantManager private constructor() {
         remoteParticipants.clear()
     }
 
-    fun getAllParticipants(includeTimeout: Boolean = false): List<TgoParticipant> {
+    fun getAllParticipants(): List<TgoParticipant> {
         val local = getLocalParticipant()
-        val remote = getRemoteParticipants(includeTimeout)
+        val remote = getRemoteParticipants()
         return listOf(local) + remote.filter { it.uid != local.uid }
     }
 
-    fun getRemoteParticipants(includeTimeout: Boolean = false): List<TgoParticipant> {
+    fun getRemoteParticipants(): List<TgoParticipant> {
         val room = TgoRTC.instance.roomManager.room
         val roomInfo = TgoRTC.instance.roomManager.currentRoomInfo
         val uidList = roomInfo?.uidList ?: emptyList<String>()
@@ -69,16 +69,20 @@ class TgoParticipantManager private constructor() {
         for (uid in uidList) {
             if (uid == loginUID) continue
             val remoteP = room?.remoteParticipants?.values?.find { it.identity?.value == uid }
-            
-            val tgoP = remoteParticipants.getOrPut(uid) { TgoParticipant(uid, remoteParticipant = remoteP) }
-            
-            if (tgoP.isTimeout() && remoteP != null) {
-                tgoP.setTimeout(false)
+
+            val tgoP = remoteParticipants.getOrPut(uid) {
+                TgoParticipant(
+                    uid,
+                    remoteParticipant = remoteP
+                )
             }
 
-            if (includeTimeout || !tgoP.isTimeout()) {
-                result.add(tgoP)
+            // 如果有远程参与者对象，更新绑定
+            if (remoteP != null && !tgoP.isJoined()) {
+                tgoP.setRemoteParticipant(remoteP)
             }
+
+            result.add(tgoP)
             addedUids.add(uid)
         }
 
@@ -86,8 +90,12 @@ class TgoParticipantManager private constructor() {
         room?.remoteParticipants?.values?.forEach { p ->
             val identity = p.identity?.value ?: return@forEach
             if (!addedUids.contains(identity)) {
-                val tgoP = remoteParticipants.getOrPut(identity) { TgoParticipant(identity, remoteParticipant = p) }
-                if (tgoP.isTimeout()) tgoP.setTimeout(false)
+                val tgoP = remoteParticipants.getOrPut(identity) {
+                    TgoParticipant(
+                        identity,
+                        remoteParticipant = p
+                    )
+                }
                 result.add(tgoP)
             }
         }
@@ -125,6 +133,52 @@ class TgoParticipantManager private constructor() {
         }
     }
 
+    fun setParticipantsMissed(roomName: String, uids: List<String>) {
+        if (roomName != TgoRTC.instance.roomManager.currentRoomInfo?.roomName) {
+            TgoLogger.warn("非当前通话，忽略,roomName:${roomName}")
+            return
+        }
+
+        for (uid in uids) {
+            val participant = remoteParticipants[uid] ?: continue
+
+            // 如果参与者已经加入，跳过不删除
+            if (participant.isJoined()) {
+                TgoLogger.info("参与者 $uid 已加入，跳过删除")
+                continue
+            }
+
+            // 通知 UI 参与者离开
+            participant.notifyLeave()
+            // 从列表中删除
+            remoteParticipants.remove(uid)
+            // 从 uidList 中删除
+            TgoRTC.instance.roomManager.currentRoomInfo?.uidList?.remove(uid)
+            TgoLogger.info("参与者 $uid 未接听已删除")
+        }
+    }
+
+    /**
+     * 删除超时的参与者并通知 UI
+     */
+    fun removeTimeoutParticipant(uid: String) {
+        val participant = remoteParticipants[uid] ?: return
+
+        // 如果参与者已经加入，不删除
+        if (participant.isJoined()) {
+            TgoLogger.info("参与者 $uid 已加入，跳过超时删除")
+            return
+        }
+
+        // 通知 UI 参与者离开
+        participant.notifyLeave()
+        // 从列表中删除
+        remoteParticipants.remove(uid)
+        // 从 uidList 中删除
+        TgoRTC.instance.roomManager.currentRoomInfo?.uidList?.remove(uid)
+        TgoLogger.info("参与者 $uid 超时已删除")
+    }
+
     fun setParticipantJoin(participant: RemoteParticipant) {
         val identity = participant.identity?.value ?: return
         val tgoP = remoteParticipants[identity]
@@ -137,7 +191,7 @@ class TgoParticipantManager private constructor() {
         if (roomInfo != null && identity !in roomInfo.uidList) {
             roomInfo.uidList.add(identity)
         }
-        
+
         val newTgoP = TgoParticipant(identity, remoteParticipant = participant)
         remoteParticipants[identity] = newTgoP
         notifyNewParticipant(newTgoP)
