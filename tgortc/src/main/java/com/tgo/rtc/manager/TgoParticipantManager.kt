@@ -130,6 +130,7 @@ class TgoParticipantManager private constructor() {
             remoteParticipants[uid] = tgoP
             notifyNewParticipant(tgoP)
             roomInfo.uidList.add(uid)
+            TgoLogger.error("通知新的参与者加入")
         }
     }
 
