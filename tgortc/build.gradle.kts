@@ -69,7 +69,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     // LiveKit Android SDK
-    api("io.livekit:livekit-android:2.23.1")
+    api("io.livekit:livekit-android:2.24.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

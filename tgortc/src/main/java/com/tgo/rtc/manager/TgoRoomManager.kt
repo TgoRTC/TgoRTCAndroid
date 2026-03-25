@@ -175,8 +175,9 @@ class TgoRoomManager private constructor() {
             val elapsed = (now.time - participant.getCreatedAt().time) / 1000
             if (elapsed >= timeoutSeconds) {
                 TgoLogger.info("参与者 ${participant.uid} 超时未加入")
-                // 真实删除超时参与者并通知 UI
-                TgoRTC.instance.participantManager.removeTimeoutParticipant(participant.uid)
+                TgoRTC.instance.participantManager.removePendingParticipants(
+                    uids = listOf(participant.uid)
+                )
             }
         }
     }

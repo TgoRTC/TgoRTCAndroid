@@ -27,7 +27,7 @@
           "group": "io.livekit",
           "module": "livekit-android",
           "version": {
-            "requires": "2.23.1"
+            "requires": "2.24.0"
           }
         },
         {
@@ -42,11 +42,11 @@
         {
           "name": "tgortc-1.0.0.aar",
           "url": "tgortc-1.0.0.aar",
-          "size": 80491,
-          "sha512": "4f7927fb2977bdbcb716bd242338861f6adc1090bfa84b8eddf9cd16c85334083a989da4ef332c647925d33e264e184359ac6193ba07b5d52fc24cb59b8f2fe1",
-          "sha256": "e4559790bfc0f50685c53a329b212f2fa799a6a2fabe32d73d1cf87857c0970a",
-          "sha1": "73fdde557999368600e8d6878159e89f6b06bff3",
-          "md5": "9b5a1e3b3b617709333595d0c59d08f3"
+          "size": 80622,
+          "sha512": "7a8edbb28e9eae59027ab3483fdca2a330bf052cd843418b9bd8fb31d252a94cb88bb75c55aa899a9c39b2f050513ac565f1338a2c58fdea2c9954dc14dbc320",
+          "sha256": "6cda9d5aef0b71b33987e123e9828afbd1f50eb018a0944c2218dc8aee0b70e7",
+          "sha1": "bde7cfd2e63a23035538aade3f60b019c4a69ec9",
+          "md5": "3088dd2c832191aad488e16c022e4403"
         }
       ]
     },
@@ -84,7 +84,7 @@
           "group": "io.livekit",
           "module": "livekit-android",
           "version": {
-            "requires": "2.23.1"
+            "requires": "2.24.0"
           }
         },
         {
@@ -99,11 +99,11 @@
         {
           "name": "tgortc-1.0.0.aar",
           "url": "tgortc-1.0.0.aar",
-          "size": 80491,
-          "sha512": "4f7927fb2977bdbcb716bd242338861f6adc1090bfa84b8eddf9cd16c85334083a989da4ef332c647925d33e264e184359ac6193ba07b5d52fc24cb59b8f2fe1",
-          "sha256": "e4559790bfc0f50685c53a329b212f2fa799a6a2fabe32d73d1cf87857c0970a",
-          "sha1": "73fdde557999368600e8d6878159e89f6b06bff3",
-          "md5": "9b5a1e3b3b617709333595d0c59d08f3"
+          "size": 80622,
+          "sha512": "7a8edbb28e9eae59027ab3483fdca2a330bf052cd843418b9bd8fb31d252a94cb88bb75c55aa899a9c39b2f050513ac565f1338a2c58fdea2c9954dc14dbc320",
+          "sha256": "6cda9d5aef0b71b33987e123e9828afbd1f50eb018a0944c2218dc8aee0b70e7",
+          "sha1": "bde7cfd2e63a23035538aade3f60b019c4a69ec9",
+          "md5": "3088dd2c832191aad488e16c022e4403"
         }
       ]
     },
@@ -122,11 +122,11 @@
         {
           "name": "tgortc-1.0.0-sources.jar",
           "url": "tgortc-1.0.0-sources.jar",
-          "size": 47520,
-          "sha512": "331d9cf4c3abecc3be4df42a319460eeabdd43480ba4ea63e415b1ec3690a7b65cc255993231f3c857e673803494d6e5c20478c689c0c3ed00ef7587b08be0da",
-          "sha256": "ed2b4ddb6303f2adaffa67e5ea93af1506d47e560b07882d059dc9a94cc87840",
-          "sha1": "989ae53dd1bb6e7f498557381adc6858d8f0d11c",
-          "md5": "8041d5d878275d7226ac7fd0cf30119b"
+          "size": 47373,
+          "sha512": "bbf4dfb538eb8f8b27bcaa1a3f6da65c548a7b565ce668210a68b8ccd3ca4f80c29e8db7296844f49625d62a1ae9a4da7008a490b34ab3fd3c39af130bd0735e",
+          "sha256": "a4d50d35da677844cacae1020f4db500146c0d4526b1878c9a671ad2e1a21e44",
+          "sha1": "64ba1a3f377a5df236f4383564c73591b866da80",
+          "md5": "0049cd6749238c7d2b3ea88c2c98410d"
         }
       ]
     }

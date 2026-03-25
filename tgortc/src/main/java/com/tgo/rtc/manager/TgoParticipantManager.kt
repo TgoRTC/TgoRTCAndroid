@@ -103,8 +103,13 @@ class TgoParticipantManager private constructor() {
         return result
     }
 
-    fun inviteParticipant(uids: List<String>) {
+    fun inviteParticipant(roomName: String?,uids: List<String>) {
         val roomInfo = TgoRTC.instance.roomManager.currentRoomInfo ?: return
+        if (roomName != null && roomName != TgoRTC.instance.roomManager.currentRoomInfo?.roomName) {
+            TgoLogger.warn("非当前通话，忽略,roomName:$roomName")
+            return
+        }
+
         val existingUids = remoteParticipants.keys
         val newUids = uids.filter { it !in existingUids }
 
@@ -134,51 +139,30 @@ class TgoParticipantManager private constructor() {
         }
     }
 
-    fun setParticipantsMissed(roomName: String, uids: List<String>) {
-        if (roomName != TgoRTC.instance.roomManager.currentRoomInfo?.roomName) {
-            TgoLogger.warn("非当前通话，忽略,roomName:${roomName}")
+    fun removePendingParticipants(
+        roomName: String? = null,
+        uids: List<String>
+    ) {
+        if (roomName != null && roomName != TgoRTC.instance.roomManager.currentRoomInfo?.roomName) {
+            TgoLogger.warn("非当前通话，忽略,roomName:$roomName")
             return
         }
 
         for (uid in uids) {
-            val participant = remoteParticipants[uid] ?: continue
-
-            // 如果参与者已经加入，跳过不删除
-            if (participant.isJoined()) {
-                TgoLogger.info("参与者 $uid 已加入，跳过删除")
-                continue
+            val removedLog = if (roomName == null) {
+                "参与者 $uid 未加入房间已删除"
+            } else {
+                "参与者 $uid 未接听已删除"
             }
 
-            // 通知 UI 参与者离开
-            participant.notifyLeave()
-            // 从列表中删除
-            remoteParticipants.remove(uid)
-            // 从 uidList 中删除
-            TgoRTC.instance.roomManager.currentRoomInfo?.uidList?.remove(uid)
-            TgoLogger.info("参与者 $uid 未接听已删除")
+            removePendingParticipantInternal(
+                uid = uid,
+                skipLog = "参与者 $uid 已加入，跳过删除",
+                removedLog = removedLog
+            )
         }
     }
 
-    /**
-     * 删除超时的参与者并通知 UI
-     */
-    fun removeTimeoutParticipant(uid: String) {
-        val participant = remoteParticipants[uid] ?: return
-
-        // 如果参与者已经加入，不删除
-        if (participant.isJoined()) {
-            TgoLogger.info("参与者 $uid 已加入，跳过超时删除")
-            return
-        }
-
-        // 通知 UI 参与者离开
-        participant.notifyLeave()
-        // 从列表中删除
-        remoteParticipants.remove(uid)
-        // 从 uidList 中删除
-        TgoRTC.instance.roomManager.currentRoomInfo?.uidList?.remove(uid)
-        TgoLogger.info("参与者 $uid 超时已删除")
-    }
 
     fun setParticipantJoin(participant: RemoteParticipant) {
         val identity = participant.identity?.value ?: return
@@ -205,6 +189,24 @@ class TgoParticipantManager private constructor() {
             remoteParticipants.remove(identity)
         }
         TgoRTC.instance.roomManager.currentRoomInfo?.uidList?.remove(identity)
+    }
+
+    private fun removePendingParticipantInternal(
+        uid: String,
+        skipLog: String,
+        removedLog: String
+    ) {
+        val participant = remoteParticipants[uid] ?: return
+
+        if (participant.isJoined()) {
+            TgoLogger.info(skipLog)
+            return
+        }
+
+        participant.notifyLeave()
+        remoteParticipants.remove(uid)
+        TgoRTC.instance.roomManager.currentRoomInfo?.uidList?.remove(uid)
+        TgoLogger.info(removedLog)
     }
 
     private fun notifyNewParticipant(participant: TgoParticipant) {
