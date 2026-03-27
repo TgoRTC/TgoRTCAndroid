@@ -45,5 +45,6 @@ jobs:
           echo "Creating tag: $NEW_TAG"
           git tag "$NEW_TAG"
           git push origin "$NEW_TAG"
-          echo "Triggering JitPack build..."
-          curl -s "https://jitpack.io/api/builds/TgoRTC/TgoRTCAndroid/$NEW_TAG" || true
+          echo "Triggering JitPack build for $NEW_TAG ..."
+          curl -s -m 30 "https://jitpack.io/com/github/TgoRTC/TgoRTCAndroid/$NEW_TAG/TgoRTCAndroid-$NEW_TAG.pom" || true
+          echo "JitPack build triggered."
