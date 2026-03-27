@@ -10,7 +10,7 @@ echo "🚀 开始发布 TgoRTC SDK 到本地仓库..."
 # 清理之前的构建
 ./gradlew clean
 
-# 发布到本地仓库
+# 发布到项目根目录 repo 本地仓库
 ./gradlew :tgortc:publishReleasePublicationToLocalRepository
 
 echo ""
@@ -30,5 +30,5 @@ echo '   }'
 echo ""
 echo "📝 在 build.gradle.kts 中添加依赖:"
 echo ""
-echo '   implementation("com.tgo.rtc:tgortc:1.0.0")'
+echo '   implementation("com.tgo.rtc:tgortc:1.0.1-local")'
 echo ""

@@ -70,6 +70,9 @@ class TgoRoomManager private constructor() {
         videoInfoListeners.toList().forEach { it(info) }
     }
 
+    fun isCalling(): Boolean{
+        return this.room != null
+    }
      suspend fun joinRoom(
         roomInfo: TgoRoomInfo,
         micEnabled: Boolean = false,
@@ -118,10 +121,18 @@ class TgoRoomManager private constructor() {
                     }
 
                     is RoomEvent.ParticipantConnected -> {
+                        TgoLogger.info(
+                            "[RoomEvent] ParticipantConnected uid=${event.participant.identity?.value} " +
+                                "livekitRemoteCount=${newRoom.remoteParticipants.size}"
+                        )
                         TgoRTC.instance.participantManager.setParticipantJoin(event.participant)
                     }
 
                     is RoomEvent.ParticipantDisconnected -> {
+                        TgoLogger.info(
+                            "[RoomEvent] ParticipantDisconnected uid=${event.participant.identity?.value} " +
+                                "livekitRemoteCount=${newRoom.remoteParticipants.size}"
+                        )
                         TgoRTC.instance.participantManager.setParticipantLeave(event.participant)
                     }
 
@@ -164,7 +175,7 @@ class TgoRoomManager private constructor() {
 
     private fun checkParticipantsTimeout(timeoutSeconds: Int) {
         val now = Date()
-        val participants = TgoRTC.instance.participantManager.getRemoteParticipants()
+        val participants = TgoRTC.instance.participantManager.getRemoteParticipants(includePending = true)
 
         for (participant in participants) {
             if (participant.isLocal) continue

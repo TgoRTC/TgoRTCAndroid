@@ -50,17 +50,40 @@ class TgoParticipantManager private constructor() {
         remoteParticipants.clear()
     }
 
-    fun getAllParticipants(): List<TgoParticipant> {
-        val local = getLocalParticipant()
-        val remote = getRemoteParticipants()
-        return listOf(local) + remote.filter { it.uid != local.uid }
+    fun getAllParticipants(includePending: Boolean = true): List<TgoParticipant> {
+        val local = getLocalParticipantOrNull()
+        val remote = getRemoteParticipants(includePending = includePending)
+        return if (local != null) {
+            listOf(local) + remote.filter { it.uid != local.uid }
+        } else {
+            remote
+        }
     }
 
-    fun getRemoteParticipants(): List<TgoParticipant> {
+    fun getJoinedParticipants(): List<TgoParticipant> {
+        val local = getLocalParticipantOrNull()?.let { listOf(it) }.orEmpty()
+        return local + getJoinedRemoteParticipants()
+    }
+
+    fun getJoinedRemoteParticipants(): List<TgoParticipant> {
+        return getRemoteParticipants(includePending = false)
+    }
+
+    fun getJoinedParticipantCount(): Int {
+        return getJoinedParticipants().size
+    }
+
+    fun getRemoteParticipants(includePending: Boolean = true): List<TgoParticipant> {
         val room = TgoRTC.instance.roomManager.room
         val roomInfo = TgoRTC.instance.roomManager.currentRoomInfo
-        val uidList = roomInfo?.uidList ?: emptyList<String>()
+        val uidList = roomInfo?.uidList ?: emptyList()
         val loginUID = roomInfo?.loginUID
+        val joinedRemotesByUid = room?.remoteParticipants?.values
+            ?.mapNotNull { participant ->
+                participant.identity?.value?.let { uid -> uid to participant }
+            }
+            ?.toMap()
+            ?: emptyMap()
 
         val result = mutableListOf<TgoParticipant>()
         val addedUids = mutableSetOf<String>()
@@ -68,7 +91,11 @@ class TgoParticipantManager private constructor() {
         // 1. Process uidList
         for (uid in uidList) {
             if (uid == loginUID) continue
-            val remoteP = room?.remoteParticipants?.values?.find { it.identity?.value == uid }
+            val remoteP = joinedRemotesByUid[uid]
+
+            if (!includePending && remoteP == null) {
+                continue
+            }
 
             val tgoP = remoteParticipants.getOrPut(uid) {
                 TgoParticipant(
@@ -87,7 +114,7 @@ class TgoParticipantManager private constructor() {
         }
 
         // 2. Process other participants not in uidList
-        room?.remoteParticipants?.values?.forEach { p ->
+        joinedRemotesByUid.values.forEach { p ->
             val identity = p.identity?.value ?: return@forEach
             if (!addedUids.contains(identity)) {
                 val tgoP = remoteParticipants.getOrPut(identity) {
@@ -184,11 +211,33 @@ class TgoParticipantManager private constructor() {
 
     fun setParticipantLeave(participant: RemoteParticipant) {
         val identity = participant.identity?.value ?: return
-        remoteParticipants[identity]?.let {
-            it.notifyLeave()
-            remoteParticipants.remove(identity)
-        }
+        val roomManager = TgoRTC.instance.roomManager
+        val room = roomManager.room
+        val roomInfo = roomManager.currentRoomInfo
+        val uidListBefore = roomInfo?.uidList?.toList().orEmpty()
+        val trackedBefore = remoteParticipants.keys.toList()
+
+        TgoLogger.info(
+            "[ParticipantLeave] start uid=$identity " +
+                "livekitRemoteUids=${room?.remoteParticipants?.values?.mapNotNull { it.identity?.value }} " +
+                "trackedRemoteUids=$trackedBefore " +
+                "uidList=$uidListBefore"
+        )
+
         TgoRTC.instance.roomManager.currentRoomInfo?.uidList?.remove(identity)
+        remoteParticipants[identity]?.let {
+            remoteParticipants.remove(identity)
+            it.notifyLeave()
+        }
+
+        TgoLogger.info(
+            "[ParticipantLeave] end uid=$identity " +
+                "livekitRemoteUids=${room?.remoteParticipants?.values?.mapNotNull { it.identity?.value }} " +
+                "trackedRemoteUids=${remoteParticipants.keys.toList()} " +
+                "uidList=${roomInfo?.uidList?.toList().orEmpty()} " +
+                "joinedCount=${getJoinedParticipantCount()}"
+        )
+
     }
 
     private fun removePendingParticipantInternal(
@@ -203,9 +252,9 @@ class TgoParticipantManager private constructor() {
             return
         }
 
-        participant.notifyLeave()
         remoteParticipants.remove(uid)
         TgoRTC.instance.roomManager.currentRoomInfo?.uidList?.remove(uid)
+        participant.notifyLeave()
         TgoLogger.info(removedLog)
     }
 

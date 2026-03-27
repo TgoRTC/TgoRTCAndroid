@@ -444,11 +444,15 @@ class TgoParticipant(
     }
 
     fun notifyLeave() {
+        remoteParticipant = null
+        localParticipant = null
         leaveListeners.toList().forEach { it() }
         dispose()
     }
 
     fun dispose() {
+        localParticipant = null
+        remoteParticipant = null
         stopAudioLevelMonitoring()
         scope.cancel()
         unsubscribeFromVideoStats()
