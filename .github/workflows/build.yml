@@ -54,16 +54,20 @@ jobs:
           NEW_TAG="${{ steps.tag.outputs.tag }}"
           echo "Waiting 60s for GitHub to propagate tag $NEW_TAG ..."
           sleep 60
-          echo "Triggering JitPack build..."
+
+          echo "=== Step 1: Trigger JitPack build via API ==="
+          curl -s -m 30 "https://jitpack.io/api/builds/com.github.TgoRTC/TgoRTCAndroid/$NEW_TAG" || true
+
+          echo "=== Step 2: Request module POM to ensure build starts ==="
           for i in 1 2 3 4 5; do
             HTTP_CODE=$(curl -s -o /tmp/jitpack_response.txt -w "%{http_code}" -m 120 \
-              "https://jitpack.io/com/github/TgoRTC/TgoRTCAndroid/$NEW_TAG/TgoRTCAndroid-$NEW_TAG.pom")
+              "https://jitpack.io/com/github/TgoRTC/TgoRTCAndroid/${NEW_TAG}/tgortc-${NEW_TAG}.pom")
             echo "Attempt $i: HTTP $HTTP_CODE"
             cat /tmp/jitpack_response.txt | head -5
-            if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "404" ]; then
-              echo "JitPack has received the request (build may be in progress)."
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "JitPack build succeeded!"
               break
             fi
-            echo "Waiting 30s before retry..."
-            sleep 30
+            echo "Build not ready yet, waiting 60s before retry..."
+            sleep 60
           done
