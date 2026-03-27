@@ -41,7 +41,7 @@ dependencyResolutionManagement {
 
 ```kotlin
 dependencies {
-    implementation("com.github.TgoRTC:TgoRTCAndroid:v1.0.0")
+    implementation("com.github.TgoRTC:TgoRTCAndroid:版本看上面")
 }
 ```
 
@@ -49,7 +49,7 @@ Groovy 写法：
 
 ```groovy
 dependencies {
-    implementation 'com.github.TgoRTC:TgoRTCAndroid:v1.0.0'
+    implementation 'com.github.TgoRTC:TgoRTCAndroid:版本看上面
 }
 ```
 
