@@ -4,8 +4,9 @@ plugins {
     `maven-publish`
 }
 
-// 发布配置
-val libVersion = "1.0.0"
+// 发布配置：优先使用JitPack传入的版本号，否则使用默认值
+val libVersion = (project.findProperty("version") as? String)
+    ?.takeIf { it != "unspecified" } ?: "1.0.0"
 val libGroupId = "com.tgo.rtc"
 val libArtifactId = "tgortc"
 
